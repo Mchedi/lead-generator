@@ -7,7 +7,7 @@ import streamlit as st
 GOOGLE_API_KEY = "AIzaSyBxfzMOlpuR1QVBym_LeAayEqAfvn8ZcWs"
 GOOGLE_CX = "94e638b8528184bdf"
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "hhgsk_MaN1hRKHkJ3eYxeOExcdWGdyb3FYRLVQafWTlk8Tt1vIOro6LMdp"
 GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"  # For GPT-style chat
 GROQ_SEARCH_URL = "https://api.groq.com/v1/search"  # If you use Groq's custom search (optional)
 
