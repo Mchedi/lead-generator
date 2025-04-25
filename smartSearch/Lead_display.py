@@ -1,8 +1,14 @@
+import re
 import streamlit as st
+import pandas as pd
 from chathun import chat_with_groq
 
 def display_leads(leads, search_query):
     """Display leads and handle selection"""
+    # Initialize saved leads table in session state
+    if 'saved_leads' not in st.session_state:
+        st.session_state.saved_leads = pd.DataFrame(columns=['Company', 'Website', 'Contact', 'Details'])
+    
     if not leads:
         st.warning("No leads found. Try a different search.")
         return
@@ -21,29 +27,91 @@ def display_leads(leads, search_query):
     
     with col2:
         if selected_index is not None:
-            display_lead_details(leads[selected_index])
+            display_lead_details(leads[selected_index], search_query)
+    
+    # Display saved leads table and export button
+    if not st.session_state.saved_leads.empty:
+        st.divider()
+        st.subheader("📋 Your Saved Leads")
+        
+        # Enhanced table display with clickable links
+        st.dataframe(
+            st.session_state.saved_leads,
+            column_config={
+                "Company": st.column_config.TextColumn(width="medium"),
+                "Website": st.column_config.LinkColumn("Website"),
+                "Contact": st.column_config.TextColumn(),
+                "Details": st.column_config.TextColumn(width="large")
+            },
+            hide_index=True,
+            use_container_width=True
+        )
+        
+        # Export button
+        export_cols = st.columns(3)
+        with export_cols[1]:
+            st.download_button(
+                "💾 Export to Excel",
+                data=st.session_state.saved_leads.to_csv(index=False),
+                file_name="saved_leads.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
 
-def display_lead_details(lead):
+def display_lead_details(lead, search_query):
     """Show detailed information about a single lead"""
     st.subheader(lead['name'])
     
     with st.expander("📌 Lead Details", expanded=True):
+        # Extract contact info from details (simple pattern matching)
+        contact_info = "Not found"
+        details = lead.get('details', '')
+        
+        # Try to find email or phone
+        email_match = re.search(r'[\w\.-]+@[\w\.-]+', details)
+        phone_match = re.search(r'(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4})', details)
+        
+        contact_info = ""
+        if email_match:
+            contact_info += f"📧 {email_match.group()}"
+        if phone_match:
+            contact_info += f" 📞 {phone_match.group()}"
+        if not contact_info:
+            contact_info = "Not specified"
+        
+        # Display fields
         if 'industry' in lead:
             st.markdown(f"**Industry:** {lead['industry']}")
         
-        st.markdown(f"**Details:** {lead['details']}")
+        st.markdown(f"**Contact:** {contact_info}")
+        st.markdown(f"**Details:** {details}")
         
         if 'url' in lead and lead['url']:
             st.markdown(f"[🌐 Visit Website]({lead['url']})")
         
+        # Add to list button
+        if st.button("➕ Add to List", key=f"add_{lead['name']}_{search_query}"):
+            new_lead = {
+                'Company': lead['name'],
+                'Website': lead.get('url', ''),
+                'Contact': contact_info,
+                'Details': details
+            }
+            
+            # Convert to DataFrame and concatenate
+            new_df = pd.DataFrame([new_lead])
+            st.session_state.saved_leads = pd.concat(
+                [st.session_state.saved_leads, new_df],
+                ignore_index=True
+            )
+            st.success(f"Added {lead['name']} to your list!")
+        
         # Generate AI insights
         with st.spinner("Generating engagement recommendations..."):
             prompt = [
-                {"role": "system", "content": "You are a lead engagement strategist. Provide 3 actionable recommendations for contacting this lead."},
-                {"role": "user", "content": f"Company: {lead['name']}\nDetails: {lead['details']}"}
+                {"role": "system", "content": "You are a lead engagement strategist."},
+                {"role": "user", "content": f"Suggest contact approach for: {lead['name']}\nDetails: {details}"}
             ]
             insights = chat_with_groq(prompt)
             st.markdown("### 💡 Engagement Strategy")
             st.markdown(insights)
-    
-  

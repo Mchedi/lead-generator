@@ -7,3 +7,4 @@ GROQ_SEARCH_URL = "https://api.groq.com/v1/search"
 GROQ_MODEL = "llama-3.3-70b-versatile"
 MEMORY_FILE = "chat_memory.json" 
 MAX_MESSAGES = 20  # Maximum messages to keep in history
+LEAD_HISTORY_FILE = "lead_history.json"  # New file for lead history
