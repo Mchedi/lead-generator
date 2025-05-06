@@ -125,7 +125,6 @@ def filter_leads_with_groq(prompt, leads, max_leads=15):
     
     # Enhanced prompt for better formatting
     full_prompt = f"""Analyze these leads for "{prompt}" and return the most relevant ones in this format:
-
 [Company Name]
 Industry: [sector if available]
 Key Details: [summary]

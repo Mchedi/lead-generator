@@ -2,6 +2,44 @@ import re
 import streamlit as st
 import pandas as pd
 from chathun import chat_with_groq
+import psycopg2
+from psycopg2 import Error
+
+# def save_lead_to_database(lead, details, contact_info):
+#     try:
+#         conn = psycopg2.connect(
+#             host="localhost",
+#             database="admin",
+#             user="postgres",
+#             password="postgres",
+#             port="5432"
+#         )
+#         cursor = conn.cursor()
+
+#         # Extract email and phone from contact_info
+#         email_match = re.search(r'[\w\.-]+@[\w\.-]+', contact_info)
+#         phone_match = re.search(r'(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|`latex:\(\d{3}\)`\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4})', contact_info)
+
+#         email_from = email_match.group() if email_match else ''
+#         phone = phone_match.group() if phone_match else ''
+
+#         insert_query = """
+#         INSERT INTO crm_lead (name, contact_name, email_from, phone, description, type)     
+#         VALUES (%s, %s, %s, %s, %s, %s)
+#         """
+
+#         cursor.execute(insert_query, (lead['name'], lead.get('url', ''), email_from, phone, details, 'lead'))  # Add a value for the type column
+#         conn.commit()
+#         st.success("Lead saved to database.")
+
+#     except Error as e:
+#         st.error(f"Error inserting lead: {e}")
+#         if conn:
+#             conn.rollback()
+#     finally:
+#         if conn:
+#             cursor.close()
+#             conn.close()
 
 def display_leads(leads, search_query):
     """Display leads and handle selection"""
@@ -90,14 +128,18 @@ def display_lead_details(lead, search_query):
             st.markdown(f"[🌐 Visit Website]({lead['url']})")
         
         # Add to list button
+    # Add to list button
+            # Add to list button
         if st.button("➕ Add to List", key=f"add_{lead['name']}_{search_query}"):
+        
+            #save_lead_to_database(lead, details, contact_info)
             new_lead = {
                 'Company': lead['name'],
                 'Website': lead.get('url', ''),
                 'Contact': contact_info,
                 'Details': details
             }
-            
+
             # Convert to DataFrame and concatenate
             new_df = pd.DataFrame([new_lead])
             st.session_state.saved_leads = pd.concat(
@@ -105,7 +147,8 @@ def display_lead_details(lead, search_query):
                 ignore_index=True
             )
             st.success(f"Added {lead['name']} to your list!")
-        
+
+                
         # Generate AI insights
         with st.spinner("Generating engagement recommendations..."):
             prompt = [

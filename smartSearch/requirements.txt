@@ -1,0 +1,24 @@
+# Core Framework
+streamlit==1.44.1
+
+# Database
+psycopg2-binary==2.9.10
+
+# APIs
+google-api-python-client==2.120.0  # For Google Search API
+requests==2.32.3                  # For API requests
+groq==0.3.0                       # For Groq API
+
+# Data Processing
+pandas==2.2.3
+numpy==2.2.5
+
+
+
+# Text Processing
+beautifulsoup4==4.12.3            # For HTML parsing
+lxml==4.9.4                       # Faster HTML parsing alternative
+python-dateutil==2.8.2             # For date handling
+
+# Configuration & Utilities
+python-dotenv==1.0.0              # For .env config
