@@ -63,5 +63,22 @@
       }
     ],
     "last_updated": "2025-04-29T10:36:33.950671"
+  },
+  "112075970744885830": {
+    "conversation": [
+      {
+        "role": "assistant",
+        "content": "I'm ready to analyze lead opportunities. What shall we examine today?"
+      },
+      {
+        "role": "user",
+        "content": "what was my last search ?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is the beginning of our conversation, and I don't have any information about your previous searches. I'm happy to help with any questions or topics you'd like to discuss, though. What's on your mind?"
+      }
+    ],
+    "last_updated": "2025-05-07T10:05:24.579962"
   }
 }
